@@ -16,13 +16,14 @@ import (
 	"github.com/ipfs/go-ipfs/thirdparty/unit"
 
 	files "github.com/ipfs/go-ipfs-files"
-	pstore "github.com/libp2p/go-libp2p-peerstore"
 	mocknet "github.com/libp2p/go-libp2p/p2p/net/mock"
-	testutil "github.com/libp2p/go-testutil"
+
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-testing/net"
 )
 
 func TestThreeLeggedCatTransfer(t *testing.T) {
-	conf := testutil.LatencyConfig{
+	conf := tnet.LatencyConfig{
 		NetworkLatency:    0,
 		RoutingLatency:    0,
 		BlockstoreLatency: 0,
@@ -34,7 +35,7 @@ func TestThreeLeggedCatTransfer(t *testing.T) {
 
 func TestThreeLeggedCatDegenerateSlowBlockstore(t *testing.T) {
 	SkipUnlessEpic(t)
-	conf := testutil.LatencyConfig{BlockstoreLatency: 50 * time.Millisecond}
+	conf := tnet.LatencyConfig{BlockstoreLatency: 50 * time.Millisecond}
 	if err := RunThreeLeggedCat(RandomBytes(1*unit.KB), conf); err != nil {
 		t.Fatal(err)
 	}
@@ -42,7 +43,7 @@ func TestThreeLeggedCatDegenerateSlowBlockstore(t *testing.T) {
 
 func TestThreeLeggedCatDegenerateSlowNetwork(t *testing.T) {
 	SkipUnlessEpic(t)
-	conf := testutil.LatencyConfig{NetworkLatency: 400 * time.Millisecond}
+	conf := tnet.LatencyConfig{NetworkLatency: 400 * time.Millisecond}
 	if err := RunThreeLeggedCat(RandomBytes(1*unit.KB), conf); err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +51,7 @@ func TestThreeLeggedCatDegenerateSlowNetwork(t *testing.T) {
 
 func TestThreeLeggedCatDegenerateSlowRouting(t *testing.T) {
 	SkipUnlessEpic(t)
-	conf := testutil.LatencyConfig{RoutingLatency: 400 * time.Millisecond}
+	conf := tnet.LatencyConfig{RoutingLatency: 400 * time.Millisecond}
 	if err := RunThreeLeggedCat(RandomBytes(1*unit.KB), conf); err != nil {
 		t.Fatal(err)
 	}
@@ -58,13 +59,13 @@ func TestThreeLeggedCatDegenerateSlowRouting(t *testing.T) {
 
 func TestThreeLeggedCat100MBMacbookCoastToCoast(t *testing.T) {
 	SkipUnlessEpic(t)
-	conf := testutil.LatencyConfig{}.NetworkNYtoSF().BlockstoreSlowSSD2014().RoutingSlow()
+	conf := tnet.LatencyConfig{}.NetworkNYtoSF().BlockstoreSlowSSD2014().RoutingSlow()
 	if err := RunThreeLeggedCat(RandomBytes(100*unit.MB), conf); err != nil {
 		t.Fatal(err)
 	}
 }
 
-func RunThreeLeggedCat(data []byte, conf testutil.LatencyConfig) error {
+func RunThreeLeggedCat(data []byte, conf tnet.LatencyConfig) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -118,8 +119,8 @@ func RunThreeLeggedCat(data []byte, conf testutil.LatencyConfig) error {
 		return err
 	}
 
-	bis := bootstrap.Peerstore.PeerInfo(bootstrap.PeerHost.ID())
-	bcfg := bootstrap2.BootstrapConfigWithPeers([]pstore.PeerInfo{bis})
+	bis := bootstrap.peer.AddrInfo(bootstrap.PeerHost.ID())
+	bcfg := bootstrap2.BootstrapConfigWithPeers([]peer.AddrInfo{bis})
 	if err := adder.Bootstrap(bcfg); err != nil {
 		return err
 	}

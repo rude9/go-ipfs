@@ -12,7 +12,7 @@ import (
 	"github.com/ipfs/go-verifcid"
 	"github.com/jbenet/goprocess"
 	goprocessctx "github.com/jbenet/goprocess/context"
-	routing "github.com/libp2p/go-libp2p-routing"
+	"github.com/libp2p/go-libp2p-core/routing"
 )
 
 var log = logging.Logger("reprovider")

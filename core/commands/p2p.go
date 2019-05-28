@@ -14,10 +14,11 @@ import (
 	cmdenv "github.com/ipfs/go-ipfs/core/commands/cmdenv"
 	p2p "github.com/ipfs/go-ipfs/p2p"
 
+	"github.com/libp2p/go-libp2p-core/peerstore"
+	"github.com/libp2p/go-libp2p-core/protocol"
+
 	ipfsaddr "github.com/ipfs/go-ipfs-addr"
 	cmds "github.com/ipfs/go-ipfs-cmds"
-	pstore "github.com/libp2p/go-libp2p-peerstore"
-	protocol "github.com/libp2p/go-libp2p-protocol"
 	ma "github.com/multiformats/go-multiaddr"
 	madns "github.com/multiformats/go-multiaddr-dns"
 )
@@ -256,9 +257,9 @@ func checkPort(target ma.Multiaddr) error {
 }
 
 // forwardLocal forwards local connections to a libp2p service
-func forwardLocal(ctx context.Context, p *p2p.P2P, ps pstore.Peerstore, proto protocol.ID, bindAddr ma.Multiaddr, addrs []ipfsaddr.IPFSAddr) error {
+func forwardLocal(ctx context.Context, p *p2p.P2P, ps peerstore.Peerstore, proto protocol.ID, bindAddr ma.Multiaddr, addrs []ipfsaddr.IPFSAddr) error {
 	for _, addr := range addrs {
-		ps.AddAddr(addr.ID(), addr.Multiaddr(), pstore.TempAddrTTL)
+		ps.AddAddr(addr.ID(), addr.Multiaddr(), peerstore.TempAddrTTL)
 	}
 	// TODO: return some info
 	// the length of the addrs must large than 0

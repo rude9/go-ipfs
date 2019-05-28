@@ -4,10 +4,11 @@ import (
 	"io"
 	"sync"
 
-	ifconnmgr "github.com/libp2p/go-libp2p-interface-connmgr"
-	net "github.com/libp2p/go-libp2p-net"
-	peer "github.com/libp2p/go-libp2p-peer"
-	protocol "github.com/libp2p/go-libp2p-protocol"
+	"github.com/libp2p/go-libp2p-core/connmgr"
+	"github.com/libp2p/go-libp2p-core/network"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-core/protocol"
+
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr-net"
 )
@@ -25,7 +26,7 @@ type Stream struct {
 	peer       peer.ID
 
 	Local  manet.Conn
-	Remote net.Stream
+	Remote network.Stream
 
 	Registry *StreamRegistry
 }
@@ -68,7 +69,7 @@ type StreamRegistry struct {
 	conns   map[peer.ID]int
 	nextID  uint64
 
-	ifconnmgr.ConnManager
+	connmgr.ConnManager
 }
 
 // Register registers a stream to the registry

@@ -13,19 +13,20 @@ import (
 	ipns "github.com/ipfs/go-ipns"
 	path "github.com/ipfs/go-path"
 	opts "github.com/ipfs/interface-go-ipfs-core/options/namesys"
-	ci "github.com/libp2p/go-libp2p-crypto"
-	peer "github.com/libp2p/go-libp2p-peer"
-	pstore "github.com/libp2p/go-libp2p-peerstore"
+
+	ci "github.com/libp2p/go-libp2p-core/crypto"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-core/peerstore"
+	"github.com/libp2p/go-libp2p-core/routing"
+	"github.com/libp2p/go-libp2p-testing/net"
+
 	pstoremem "github.com/libp2p/go-libp2p-peerstore/pstoremem"
 	record "github.com/libp2p/go-libp2p-record"
-	routing "github.com/libp2p/go-libp2p-routing"
-	ropts "github.com/libp2p/go-libp2p-routing/options"
-	testutil "github.com/libp2p/go-testutil"
 )
 
 func TestResolverValidation(t *testing.T) {
 	ctx := context.Background()
-	rid := testutil.RandIdentityOrFatal(t)
+	rid := tnet.RandIdentityOrFatal(t)
 	dstore := dssync.MutexWrap(ds.NewMapDatastore())
 	peerstore := pstoremem.NewPeerstore()
 
@@ -155,10 +156,10 @@ func genKeys(t *testing.T) (ci.PrivKey, peer.ID, string, string) {
 
 type mockValueStore struct {
 	r     routing.ValueStore
-	kbook pstore.KeyBook
+	kbook peerstore.KeyBook
 }
 
-func newMockValueStore(id testutil.Identity, dstore ds.Datastore, kbook pstore.KeyBook) *mockValueStore {
+func newMockValueStore(id tnet.Identity, dstore ds.Datastore, kbook peerstore.KeyBook) *mockValueStore {
 	return &mockValueStore{
 		r: offline.NewOfflineRouter(dstore, record.NamespacedValidator{
 			"ipns": ipns.Validator{KeyBook: kbook},
@@ -168,11 +169,11 @@ func newMockValueStore(id testutil.Identity, dstore ds.Datastore, kbook pstore.K
 	}
 }
 
-func (m *mockValueStore) GetValue(ctx context.Context, k string, opts ...ropts.Option) ([]byte, error) {
+func (m *mockValueStore) GetValue(ctx context.Context, k string, opts ...routing.Option) ([]byte, error) {
 	return m.r.GetValue(ctx, k, opts...)
 }
 
-func (m *mockValueStore) SearchValue(ctx context.Context, k string, opts ...ropts.Option) (<-chan []byte, error) {
+func (m *mockValueStore) SearchValue(ctx context.Context, k string, opts ...routing.Option) (<-chan []byte, error) {
 	return m.r.SearchValue(ctx, k, opts...)
 }
 
@@ -196,6 +197,6 @@ func (m *mockValueStore) GetPublicKey(ctx context.Context, p peer.ID) (ci.PubKey
 	return pk, m.kbook.AddPubKey(p, pk)
 }
 
-func (m *mockValueStore) PutValue(ctx context.Context, k string, d []byte, opts ...ropts.Option) error {
+func (m *mockValueStore) PutValue(ctx context.Context, k string, d []byte, opts ...routing.Option) error {
 	return m.r.PutValue(ctx, k, d, opts...)
 }

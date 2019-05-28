@@ -7,11 +7,12 @@ import (
 
 	iaddr "github.com/ipfs/go-ipfs-addr"
 	coreiface "github.com/ipfs/interface-go-ipfs-core"
-	inet "github.com/libp2p/go-libp2p-net"
-	net "github.com/libp2p/go-libp2p-net"
-	peer "github.com/libp2p/go-libp2p-peer"
-	pstore "github.com/libp2p/go-libp2p-peerstore"
-	protocol "github.com/libp2p/go-libp2p-protocol"
+
+	"github.com/libp2p/go-libp2p-core/network"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-core/peerstore"
+	"github.com/libp2p/go-libp2p-core/protocol"
+
 	swarm "github.com/libp2p/go-libp2p-swarm"
 	ma "github.com/multiformats/go-multiaddr"
 )
@@ -19,9 +20,9 @@ import (
 type SwarmAPI CoreAPI
 
 type connInfo struct {
-	peerstore pstore.Peerstore
-	conn      net.Conn
-	dir       net.Direction
+	peerstore peerstore.Peerstore
+	conn      network.Conn
+	dir       network.Direction
 
 	addr ma.Multiaddr
 	peer peer.ID
@@ -31,7 +32,7 @@ type connInfo struct {
 const connectionManagerTag = "user-connect"
 const connectionManagerWeight = 100
 
-func (api *SwarmAPI) Connect(ctx context.Context, pi pstore.PeerInfo) error {
+func (api *SwarmAPI) Connect(ctx context.Context, pi peer.AddrInfo) error {
 	if api.peerHost == nil {
 		return coreiface.ErrOffline
 	}
@@ -63,7 +64,7 @@ func (api *SwarmAPI) Disconnect(ctx context.Context, addr ma.Multiaddr) error {
 	net := api.peerHost.Network()
 
 	if taddr == nil {
-		if net.Connectedness(id) != inet.Connected {
+		if net.Connectedness(id) != network.Connected {
 			return coreiface.ErrNotConnected
 		} else if err := net.ClosePeer(id); err != nil {
 			return err
@@ -159,7 +160,7 @@ func (ci *connInfo) Address() ma.Multiaddr {
 	return ci.addr
 }
 
-func (ci *connInfo) Direction() net.Direction {
+func (ci *connInfo) Direction() network.Direction {
 	return ci.dir
 }
 

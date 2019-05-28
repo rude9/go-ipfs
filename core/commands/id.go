@@ -11,11 +11,12 @@ import (
 	core "github.com/ipfs/go-ipfs/core"
 	cmdenv "github.com/ipfs/go-ipfs/core/commands/cmdenv"
 
+	ic "github.com/libp2p/go-libp2p-core/crypto"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-core/peerstore"
+
 	cmds "github.com/ipfs/go-ipfs-cmds"
-	ic "github.com/libp2p/go-libp2p-crypto"
 	kb "github.com/libp2p/go-libp2p-kbucket"
-	peer "github.com/libp2p/go-libp2p-peer"
-	pstore "github.com/libp2p/go-libp2p-peerstore"
 	identify "github.com/libp2p/go-libp2p/p2p/protocol/identify"
 )
 
@@ -136,7 +137,7 @@ EXAMPLE:
 	Type: IdOutput{},
 }
 
-func printPeer(ps pstore.Peerstore, p peer.ID) (interface{}, error) {
+func printPeer(ps peerstore.Peerstore, p peer.ID) (interface{}, error) {
 	if p == "" {
 		return nil, errors.New("attempted to print nil peer")
 	}

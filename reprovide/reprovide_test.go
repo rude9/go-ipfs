@@ -9,8 +9,9 @@ import (
 	dssync "github.com/ipfs/go-datastore/sync"
 	blockstore "github.com/ipfs/go-ipfs-blockstore"
 	mock "github.com/ipfs/go-ipfs-routing/mock"
-	pstore "github.com/libp2p/go-libp2p-peerstore"
-	"github.com/libp2p/go-testutil"
+
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-testing/net"
 )
 
 func TestReprovide(t *testing.T) {
@@ -19,8 +20,8 @@ func TestReprovide(t *testing.T) {
 
 	mrserv := mock.NewServer()
 
-	idA := testutil.RandIdentityOrFatal(t)
-	idB := testutil.RandIdentityOrFatal(t)
+	idA := tnet.RandIdentityOrFatal(t)
+	idB := tnet.RandIdentityOrFatal(t)
 
 	clA := mrserv.Client(idA)
 	clB := mrserv.Client(idB)
@@ -40,7 +41,7 @@ func TestReprovide(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var providers []pstore.PeerInfo
+	var providers []peer.AddrInfo
 	maxProvs := 100
 
 	provChan := clB.FindProvidersAsync(ctx, blk.Cid(), maxProvs)

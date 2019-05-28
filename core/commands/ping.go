@@ -12,8 +12,10 @@ import (
 
 	iaddr "github.com/ipfs/go-ipfs-addr"
 	cmds "github.com/ipfs/go-ipfs-cmds"
-	"github.com/libp2p/go-libp2p-peer"
-	pstore "github.com/libp2p/go-libp2p-peerstore"
+
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-core/peerstore"
+
 	ping "github.com/libp2p/go-libp2p/p2p/protocol/ping"
 	ma "github.com/multiformats/go-multiaddr"
 )
@@ -69,7 +71,7 @@ trip latency information.
 		}
 
 		if addr != nil {
-			n.Peerstore.AddAddr(pid, addr, pstore.TempAddrTTL) // temporary
+			n.Peerstore.AddAddr(pid, addr, peerstore.TempAddrTTL) // temporary
 		}
 
 		numPings, _ := req.Options[pingCountOptionName].(int)
@@ -92,7 +94,7 @@ trip latency information.
 			if err != nil {
 				return fmt.Errorf("peer lookup failed: %s", err)
 			}
-			n.Peerstore.AddAddrs(p.ID, p.Addrs, pstore.TempAddrTTL)
+			n.Peerstore.AddAddrs(p.ID, p.Addrs, peerstore.TempAddrTTL)
 		}
 
 		if err := res.Emit(&PingResult{

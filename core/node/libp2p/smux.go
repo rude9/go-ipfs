@@ -5,9 +5,10 @@ import (
 	"strings"
 
 	"github.com/libp2p/go-libp2p"
+	"github.com/libp2p/go-libp2p-core/mux"
+
 	mplex "github.com/libp2p/go-libp2p-mplex"
 	yamux "github.com/libp2p/go-libp2p-yamux"
-	smux "github.com/libp2p/go-stream-muxer"
 )
 
 func makeSmuxTransportOption(mplexExp bool) libp2p.Option {
@@ -21,7 +22,7 @@ func makeSmuxTransportOption(mplexExp bool) libp2p.Option {
 		ymxtpt.LogOutput = os.Stderr
 	}
 
-	muxers := map[string]smux.Transport{yamuxID: &ymxtpt}
+	muxers := map[string]mux.Multiplexer{yamuxID: &ymxtpt}
 	if mplexExp {
 		muxers[mplexID] = mplex.DefaultTransport
 	}

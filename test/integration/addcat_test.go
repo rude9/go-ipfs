@@ -17,12 +17,13 @@ import (
 	mock "github.com/ipfs/go-ipfs/core/mock"
 	"github.com/ipfs/go-ipfs/thirdparty/unit"
 
+	"github.com/libp2p/go-libp2p-core/peer"
+	tnet "github.com/libp2p/go-libp2p-testing/net"
+
 	files "github.com/ipfs/go-ipfs-files"
 	logging "github.com/ipfs/go-log"
 	random "github.com/jbenet/go-random"
-	pstore "github.com/libp2p/go-libp2p-peerstore"
 	mocknet "github.com/libp2p/go-libp2p/p2p/net/mock"
-	testutil "github.com/libp2p/go-testutil"
 )
 
 var log = logging.Logger("epictest")
@@ -30,7 +31,7 @@ var log = logging.Logger("epictest")
 const kSeed = 1
 
 func Test1KBInstantaneous(t *testing.T) {
-	conf := testutil.LatencyConfig{
+	conf := tnet.LatencyConfig{
 		NetworkLatency:    0,
 		RoutingLatency:    0,
 		BlockstoreLatency: 0,
@@ -43,7 +44,7 @@ func Test1KBInstantaneous(t *testing.T) {
 
 func TestDegenerateSlowBlockstore(t *testing.T) {
 	SkipUnlessEpic(t)
-	conf := testutil.LatencyConfig{BlockstoreLatency: 50 * time.Millisecond}
+	conf := tnet.LatencyConfig{BlockstoreLatency: 50 * time.Millisecond}
 	if err := AddCatPowers(conf, 128); err != nil {
 		t.Fatal(err)
 	}
@@ -51,7 +52,7 @@ func TestDegenerateSlowBlockstore(t *testing.T) {
 
 func TestDegenerateSlowNetwork(t *testing.T) {
 	SkipUnlessEpic(t)
-	conf := testutil.LatencyConfig{NetworkLatency: 400 * time.Millisecond}
+	conf := tnet.LatencyConfig{NetworkLatency: 400 * time.Millisecond}
 	if err := AddCatPowers(conf, 128); err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +60,7 @@ func TestDegenerateSlowNetwork(t *testing.T) {
 
 func TestDegenerateSlowRouting(t *testing.T) {
 	SkipUnlessEpic(t)
-	conf := testutil.LatencyConfig{RoutingLatency: 400 * time.Millisecond}
+	conf := tnet.LatencyConfig{RoutingLatency: 400 * time.Millisecond}
 	if err := AddCatPowers(conf, 128); err != nil {
 		t.Fatal(err)
 	}
@@ -67,13 +68,13 @@ func TestDegenerateSlowRouting(t *testing.T) {
 
 func Test100MBMacbookCoastToCoast(t *testing.T) {
 	SkipUnlessEpic(t)
-	conf := testutil.LatencyConfig{}.NetworkNYtoSF().BlockstoreSlowSSD2014().RoutingSlow()
+	conf := tnet.LatencyConfig{}.NetworkNYtoSF().BlockstoreSlowSSD2014().RoutingSlow()
 	if err := DirectAddCat(RandomBytes(100*1024*1024), conf); err != nil {
 		t.Fatal(err)
 	}
 }
 
-func AddCatPowers(conf testutil.LatencyConfig, megabytesMax int64) error {
+func AddCatPowers(conf tnet.LatencyConfig, megabytesMax int64) error {
 	var i int64
 	for i = 1; i < megabytesMax; i = i * 2 {
 		fmt.Printf("%d MB\n", i)
@@ -93,7 +94,7 @@ func RandomBytes(n int64) []byte {
 	return data.Bytes()
 }
 
-func DirectAddCat(data []byte, conf testutil.LatencyConfig) error {
+func DirectAddCat(data []byte, conf tnet.LatencyConfig) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -138,8 +139,8 @@ func DirectAddCat(data []byte, conf testutil.LatencyConfig) error {
 		return err
 	}
 
-	bs1 := []pstore.PeerInfo{adder.Peerstore.PeerInfo(adder.Identity)}
-	bs2 := []pstore.PeerInfo{catter.Peerstore.PeerInfo(catter.Identity)}
+	bs1 := []peer.AddrInfo{adder.peer.AddrInfo(adder.Identity)}
+	bs2 := []peer.AddrInfo{catter.peer.AddrInfo(catter.Identity)}
 
 	if err := catter.Bootstrap(bootstrap.BootstrapConfigWithPeers(bs1)); err != nil {
 		return err

@@ -11,20 +11,23 @@ import (
 	mockrouting "github.com/ipfs/go-ipfs-routing/mock"
 	ipns "github.com/ipfs/go-ipns"
 	path "github.com/ipfs/go-path"
-	peer "github.com/libp2p/go-libp2p-peer"
-	testutil "github.com/libp2p/go-testutil"
+
+	ci "github.com/libp2p/go-libp2p-core/crypto"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-core/test"
+	tnet "github.com/libp2p/go-libp2p-testing/net"
 )
 
 func TestRoutingResolve(t *testing.T) {
 	dstore := dssync.MutexWrap(ds.NewMapDatastore())
 	serv := mockrouting.NewServer()
-	id := testutil.RandIdentityOrFatal(t)
+	id := tnet.RandIdentityOrFatal(t)
 	d := serv.ClientWithDatastore(context.Background(), id, dstore)
 
 	resolver := NewIpnsResolver(d)
 	publisher := NewIpnsPublisher(d, dstore)
 
-	privk, pubk, err := testutil.RandTestKeyPair(512)
+	privk, pubk, err := test.RandTestKeyPair(ci.RSA, 512)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,12 +55,12 @@ func TestRoutingResolve(t *testing.T) {
 
 func TestPrexistingExpiredRecord(t *testing.T) {
 	dstore := dssync.MutexWrap(ds.NewMapDatastore())
-	d := mockrouting.NewServer().ClientWithDatastore(context.Background(), testutil.RandIdentityOrFatal(t), dstore)
+	d := mockrouting.NewServer().ClientWithDatastore(context.Background(), tnet.RandIdentityOrFatal(t), dstore)
 
 	resolver := NewIpnsResolver(d)
 	publisher := NewIpnsPublisher(d, dstore)
 
-	privk, pubk, err := testutil.RandTestKeyPair(512)
+	privk, pubk, err := tnet.RandTestKeyPair(512)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,12 +97,12 @@ func TestPrexistingExpiredRecord(t *testing.T) {
 
 func TestPrexistingRecord(t *testing.T) {
 	dstore := dssync.MutexWrap(ds.NewMapDatastore())
-	d := mockrouting.NewServer().ClientWithDatastore(context.Background(), testutil.RandIdentityOrFatal(t), dstore)
+	d := mockrouting.NewServer().ClientWithDatastore(context.Background(), tnet.RandIdentityOrFatal(t), dstore)
 
 	resolver := NewIpnsResolver(d)
 	publisher := NewIpnsPublisher(d, dstore)
 
-	privk, pubk, err := testutil.RandTestKeyPair(512)
+	privk, pubk, err := tnet.RandTestKeyPair(512)
 	if err != nil {
 		t.Fatal(err)
 	}

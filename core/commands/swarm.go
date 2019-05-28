@@ -15,12 +15,12 @@ import (
 	repo "github.com/ipfs/go-ipfs/repo"
 	fsrepo "github.com/ipfs/go-ipfs/repo/fsrepo"
 
+	"github.com/libp2p/go-libp2p-core/network"
+	"github.com/libp2p/go-libp2p-core/peer"
+
 	iaddr "github.com/ipfs/go-ipfs-addr"
 	cmds "github.com/ipfs/go-ipfs-cmds"
 	config "github.com/ipfs/go-ipfs-config"
-	inet "github.com/libp2p/go-libp2p-net"
-	peer "github.com/libp2p/go-libp2p-peer"
-	pstore "github.com/libp2p/go-libp2p-peerstore"
 	swarm "github.com/libp2p/go-libp2p-swarm"
 	mafilter "github.com/libp2p/go-maddr-filter"
 	ma "github.com/multiformats/go-multiaddr"
@@ -144,7 +144,7 @@ var swarmPeersCmd = &cmds.Command{
 					fmt.Fprintf(w, " %s", info.Latency)
 				}
 
-				if info.Direction != inet.DirUnknown {
+				if info.Direction != network.DirUnknown {
 					fmt.Fprintf(w, " %s", directionString(info.Direction))
 				}
 				fmt.Fprintln(w)
@@ -173,7 +173,7 @@ type connInfo struct {
 	Peer      string
 	Latency   string
 	Muxer     string
-	Direction inet.Direction
+	Direction network.Direction
 	Streams   []streamInfo
 }
 
@@ -206,11 +206,11 @@ func (ci connInfos) Swap(i, j int) {
 }
 
 // directionString transfers to string
-func directionString(d inet.Direction) string {
+func directionString(d network.Direction) string {
 	switch d {
-	case inet.DirInbound:
+	case network.DirInbound:
 		return "inbound"
-	case inet.DirOutbound:
+	case network.DirOutbound:
 		return "outbound"
 	default:
 		return ""
@@ -467,7 +467,7 @@ func parseMultiaddrs(maddrs []ma.Multiaddr) (iaddrs []iaddr.IPFSAddr, err error)
 
 // peersWithAddresses is a function that takes in a slice of string peer addresses
 // (multiaddr + peerid) and returns a slice of properly constructed peers
-func peersWithAddresses(ctx context.Context, addrs []string) ([]pstore.PeerInfo, error) {
+func peersWithAddresses(ctx context.Context, addrs []string) ([]peer.AddrInfo, error) {
 	// resolve addresses
 	maddrs, err := resolveAddresses(ctx, addrs)
 	if err != nil {
@@ -489,9 +489,9 @@ func peersWithAddresses(ctx context.Context, addrs []string) ([]pstore.PeerInfo,
 			peers[id] = nil
 		}
 	}
-	pis := make([]pstore.PeerInfo, 0, len(peers))
+	pis := make([]peer.AddrInfo, 0, len(peers))
 	for id, maddrs := range peers {
-		pis = append(pis, pstore.PeerInfo{
+		pis = append(pis, peer.AddrInfo{
 			ID:    id,
 			Addrs: maddrs,
 		})

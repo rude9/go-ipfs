@@ -2,9 +2,10 @@ package p2p
 
 import (
 	logging "github.com/ipfs/go-log"
-	p2phost "github.com/libp2p/go-libp2p-host"
-	peer "github.com/libp2p/go-libp2p-peer"
-	pstore "github.com/libp2p/go-libp2p-peerstore"
+
+	"github.com/libp2p/go-libp2p-core/host"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-core/peerstore"
 )
 
 var log = logging.Logger("p2p-mount")
@@ -16,12 +17,12 @@ type P2P struct {
 	Streams        *StreamRegistry
 
 	identity  peer.ID
-	peerHost  p2phost.Host
-	peerstore pstore.Peerstore
+	peerHost  host.Host
+	peerstore peerstore.Peerstore
 }
 
 // New creates new P2P struct
-func New(identity peer.ID, peerHost p2phost.Host, peerstore pstore.Peerstore) *P2P {
+func New(identity peer.ID, peerHost host.Host, peerstore peerstore.Peerstore) *P2P {
 	return &P2P{
 		identity:  identity,
 		peerHost:  peerHost,

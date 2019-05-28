@@ -10,9 +10,9 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	cmds "github.com/ipfs/go-ipfs-cmds"
-	metrics "github.com/libp2p/go-libp2p-metrics"
-	peer "github.com/libp2p/go-libp2p-peer"
-	protocol "github.com/libp2p/go-libp2p-protocol"
+	"github.com/libp2p/go-libp2p-core/metrics"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-core/protocol"
 )
 
 var StatsCmd = &cmds.Command{

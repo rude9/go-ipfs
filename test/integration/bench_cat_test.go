@@ -14,10 +14,11 @@ import (
 	mock "github.com/ipfs/go-ipfs/core/mock"
 	"github.com/ipfs/go-ipfs/thirdparty/unit"
 
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-testing/net"
+
 	files "github.com/ipfs/go-ipfs-files"
-	pstore "github.com/libp2p/go-libp2p-peerstore"
 	mocknet "github.com/libp2p/go-libp2p/p2p/net/mock"
-	testutil "github.com/libp2p/go-testutil"
 )
 
 func BenchmarkCat1MB(b *testing.B) { benchmarkVarCat(b, unit.MB*1) }
@@ -35,7 +36,7 @@ func benchmarkVarCat(b *testing.B, size int64) {
 	}
 }
 
-func benchCat(b *testing.B, data []byte, conf testutil.LatencyConfig) error {
+func benchCat(b *testing.B, data []byte, conf tnet.LatencyConfig) error {
 	b.StopTimer()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -81,8 +82,8 @@ func benchCat(b *testing.B, data []byte, conf testutil.LatencyConfig) error {
 		return err
 	}
 
-	bs1 := []pstore.PeerInfo{adder.Peerstore.PeerInfo(adder.Identity)}
-	bs2 := []pstore.PeerInfo{catter.Peerstore.PeerInfo(catter.Identity)}
+	bs1 := []peer.AddrInfo{adder.peer.AddrInfo(adder.Identity)}
+	bs2 := []peer.AddrInfo{catter.peer.AddrInfo(catter.Identity)}
 
 	if err := catter.Bootstrap(bootstrap.BootstrapConfigWithPeers(bs1)); err != nil {
 		return err

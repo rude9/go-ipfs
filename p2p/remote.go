@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	net "github.com/libp2p/go-libp2p-net"
-	protocol "github.com/libp2p/go-libp2p-protocol"
+	"github.com/libp2p/go-libp2p-core/network"
+	"github.com/libp2p/go-libp2p-core/protocol"
+
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr-net"
 )
@@ -45,7 +46,7 @@ func (p2p *P2P) ForwardRemote(ctx context.Context, proto protocol.ID, addr ma.Mu
 	return listener, nil
 }
 
-func (l *remoteListener) handleStream(remote net.Stream) {
+func (l *remoteListener) handleStream(remote network.Stream) {
 	local, err := manet.Dial(l.addr)
 	if err != nil {
 		_ = remote.Reset()

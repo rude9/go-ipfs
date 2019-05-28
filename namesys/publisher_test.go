@@ -11,14 +11,16 @@ import (
 	dshelp "github.com/ipfs/go-ipfs-ds-help"
 	mockrouting "github.com/ipfs/go-ipfs-routing/mock"
 	ipns "github.com/ipfs/go-ipns"
-	ci "github.com/libp2p/go-libp2p-crypto"
-	peer "github.com/libp2p/go-libp2p-peer"
-	testutil "github.com/libp2p/go-testutil"
+
+	ci "github.com/libp2p/go-libp2p-core/crypto"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-testing/net"
+
 	ma "github.com/multiformats/go-multiaddr"
 )
 
 type identity struct {
-	testutil.PeerNetParams
+	tnet.PeerNetParams
 }
 
 func (p *identity) ID() peer.ID {
@@ -63,11 +65,11 @@ func testNamekeyPublisher(t *testing.T, keyType int, expectedErr error, expected
 	eol := time.Now().Add(24 * time.Hour)
 
 	// Routing value store
-	p := testutil.PeerNetParams{
+	p := tnet.PeerNetParams{
 		ID:      id,
 		PrivKey: privKey,
 		PubKey:  pubKey,
-		Addr:    testutil.ZeroLocalTCPAddress,
+		Addr:    tnet.ZeroLocalTCPAddress,
 	}
 
 	dstore := dssync.MutexWrap(ds.NewMapDatastore())

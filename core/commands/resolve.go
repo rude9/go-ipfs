@@ -103,12 +103,12 @@ Resolve the value of an IPFS DAG path:
 		if strings.HasPrefix(name, "/ipns/") && !recursive {
 			rc, rcok := req.Options[resolveDhtRecordCountOptionName].(uint)
 			dhtt, dhttok := req.Options[resolveDhtTimeoutOptionName].(string)
-			ropts := []options.NameResolveOption{
+			routing := []options.NameResolveOption{
 				options.Name.ResolveOption(nsopts.Depth(1)),
 			}
 
 			if rcok {
-				ropts = append(ropts, options.Name.ResolveOption(nsopts.DhtRecordCount(rc)))
+				routing = append(routing, options.Name.ResolveOption(nsopts.DhtRecordCount(rc)))
 			}
 			if dhttok {
 				d, err := time.ParseDuration(dhtt)
@@ -118,9 +118,9 @@ Resolve the value of an IPFS DAG path:
 				if d < 0 {
 					return errors.New("DHT timeout value must be >= 0")
 				}
-				ropts = append(ropts, options.Name.ResolveOption(nsopts.DhtTimeout(d)))
+				routing = append(routing, options.Name.ResolveOption(nsopts.DhtTimeout(d)))
 			}
-			p, err := api.Name().Resolve(req.Context, name, ropts...)
+			p, err := api.Name().Resolve(req.Context, name, routing...)
 			// ErrResolveRecursion is fine
 			if err != nil && err != ns.ErrResolveRecursion {
 				return err

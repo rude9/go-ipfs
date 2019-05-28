@@ -2,8 +2,9 @@ package libp2p
 
 import (
 	"github.com/libp2p/go-libp2p"
+	"github.com/libp2p/go-libp2p-core/host"
+
 	autonat "github.com/libp2p/go-libp2p-autonat-svc"
-	host "github.com/libp2p/go-libp2p-host"
 	libp2pquic "github.com/libp2p/go-libp2p-quic-transport"
 	"go.uber.org/fx"
 

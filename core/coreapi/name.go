@@ -13,9 +13,9 @@ import (
 	coreiface "github.com/ipfs/interface-go-ipfs-core"
 	caopts "github.com/ipfs/interface-go-ipfs-core/options"
 	path "github.com/ipfs/interface-go-ipfs-core/path"
-	"github.com/libp2p/go-libp2p-crypto"
-	ci "github.com/libp2p/go-libp2p-crypto"
-	"github.com/libp2p/go-libp2p-peer"
+
+	"github.com/libp2p/go-libp2p-core/crypto"
+	"github.com/libp2p/go-libp2p-core/peer"
 )
 
 type NameAPI CoreAPI
@@ -139,7 +139,7 @@ func (api *NameAPI) Resolve(ctx context.Context, name string, opts ...caopts.Nam
 	return p, err
 }
 
-func keylookup(self ci.PrivKey, kstore keystore.Keystore, k string) (crypto.PrivKey, error) {
+func keylookup(self crypto.PrivKey, kstore keystore.Keystore, k string) (crypto.PrivKey, error) {
 	if k == "self" {
 		return self, nil
 	}

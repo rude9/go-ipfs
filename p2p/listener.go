@@ -4,9 +4,10 @@ import (
 	"errors"
 	"sync"
 
-	p2phost "github.com/libp2p/go-libp2p-host"
-	net "github.com/libp2p/go-libp2p-net"
-	"github.com/libp2p/go-libp2p-protocol"
+	"github.com/libp2p/go-libp2p-core/host"
+	"github.com/libp2p/go-libp2p-core/network"
+	"github.com/libp2p/go-libp2p-core/protocol"
+
 	ma "github.com/multiformats/go-multiaddr"
 )
 
@@ -36,7 +37,7 @@ func newListenersLocal() *Listeners {
 	}
 }
 
-func newListenersP2P(host p2phost.Host) *Listeners {
+func newListenersP2P(host host.Host) *Listeners {
 	reg := &Listeners{
 		Listeners: map[string]Listener{},
 	}
@@ -47,7 +48,7 @@ func newListenersP2P(host p2phost.Host) *Listeners {
 
 		_, ok := reg.Listeners[p]
 		return ok
-	}, func(stream net.Stream) {
+	}, func(stream network.Stream) {
 		reg.RLock()
 		defer reg.RUnlock()
 

@@ -7,7 +7,8 @@ import (
 
 	core "github.com/ipfs/go-ipfs/core"
 
-	inet "github.com/libp2p/go-libp2p-net"
+	"github.com/libp2p/go-libp2p-core/network"
+
 	swarmt "github.com/libp2p/go-libp2p-swarm/testing"
 	bhost "github.com/libp2p/go-libp2p/p2p/host/basic"
 )
@@ -23,7 +24,7 @@ func TestPeersTotal(t *testing.T) {
 		hosts[i] = bhost.New(swarmt.GenSwarm(t, ctx))
 	}
 
-	dial := func(a, b inet.Network) {
+	dial := func(a, b network.Network) {
 		swarmt.DivulgeAddresses(b, a)
 		if _, err := a.DialPeer(ctx, b.LocalPeer()); err != nil {
 			t.Fatalf("Failed to dial: %s", err)

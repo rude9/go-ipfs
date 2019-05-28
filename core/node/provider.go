@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/libp2p/go-libp2p-routing"
+	"github.com/libp2p/go-libp2p-core/routing"
 	"go.uber.org/fx"
 
 	"github.com/ipfs/go-ipfs/core/node/helpers"
@@ -21,7 +21,7 @@ func ProviderQueue(mctx helpers.MetricsCtx, lc fx.Lifecycle, repo repo.Repo) (*p
 }
 
 // ProviderCtor creates new record provider
-func ProviderCtor(mctx helpers.MetricsCtx, lc fx.Lifecycle, queue *provider.Queue, rt routing.IpfsRouting) provider.Provider {
+func ProviderCtor(mctx helpers.MetricsCtx, lc fx.Lifecycle, queue *provider.Queue, rt routing.Routing) provider.Provider {
 	p := provider.NewProvider(helpers.LifecycleCtx(mctx, lc), queue, rt)
 
 	lc.Append(fx.Hook{
@@ -38,8 +38,8 @@ func ProviderCtor(mctx helpers.MetricsCtx, lc fx.Lifecycle, queue *provider.Queu
 }
 
 // ReproviderCtor creates new reprovider
-func ReproviderCtor(reproviderInterval time.Duration) func(helpers.MetricsCtx, fx.Lifecycle, routing.IpfsRouting, reprovide.KeyChanFunc) (*reprovide.Reprovider, error) {
-	return func(mctx helpers.MetricsCtx, lc fx.Lifecycle, rt routing.IpfsRouting, keyProvider reprovide.KeyChanFunc) (*reprovide.Reprovider, error) {
+func ReproviderCtor(reproviderInterval time.Duration) func(helpers.MetricsCtx, fx.Lifecycle, routing.Routing, reprovide.KeyChanFunc) (*reprovide.Reprovider, error) {
+	return func(mctx helpers.MetricsCtx, lc fx.Lifecycle, rt routing.Routing, keyProvider reprovide.KeyChanFunc) (*reprovide.Reprovider, error) {
 		return reprovide.NewReprovider(helpers.LifecycleCtx(mctx, lc), reproviderInterval, rt, keyProvider), nil
 	}
 }

@@ -2,7 +2,8 @@ package libp2p
 
 import (
 	"github.com/libp2p/go-libp2p"
-	metrics "github.com/libp2p/go-libp2p-metrics"
+	"github.com/libp2p/go-libp2p-core/metrics"
+
 	libp2pquic "github.com/libp2p/go-libp2p-quic-transport"
 	secio "github.com/libp2p/go-libp2p-secio"
 	tls "github.com/libp2p/go-libp2p-tls"
